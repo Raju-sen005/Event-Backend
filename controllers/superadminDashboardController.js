@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import Vendor from "../models/vendor.js";
 import Event from "../models/event.js";
+import Bid from "../models/bid.js";
 import Requirement from "../models/requirement.js";
 import { Op } from "sequelize";
 
@@ -27,13 +28,17 @@ export const getAdminDashboardStats = async (req, res) => {
     // Total requirements
     const totalRequirements = await Requirement.count();
 
+    //Total bids
+    const totalBids = await Bid.count();
+
     res.status(200).json({
       success: true,
       stats: {
         totalUsers,
         totalVendors,
         activeEvents,
-        totalRequirements
+        totalRequirements,
+        totalBids
       },
     });
   } catch (error) {

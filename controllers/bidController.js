@@ -1,5 +1,6 @@
 import Bid from "../models/bid.js";
 
+
 /* =========================
    CREATE BID (Vendor)
 ========================= */
@@ -113,3 +114,70 @@ export const deleteBid = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/* =========================
+   GET ALL BIDS (Admin)
+========================= */
+export const getAllBids = async (req, res) => {
+  try {
+    const bids = await Bid.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      success: true,
+      total: bids.length,
+      bids,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+/* =========================
+   GET PENDING BIDS
+========================= */
+export const getPendingBids = async (req, res) => {
+  try {
+    const bids = await Bid.findAll({
+      where: { status: "Pending" },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      success: true,
+      total: bids.length,
+      bids,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+/* =========================
+   GET APPROVED BIDS
+========================= */
+export const getApprovedBids = async (req, res) => {
+  try {
+    const bids = await Bid.findAll({
+      where: { status: "Approved" },
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      success: true,
+      total: bids.length,
+      bids,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
