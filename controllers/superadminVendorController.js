@@ -42,11 +42,11 @@ export const getAllVendors = async (req, res) => {
       name: v.fullName,
       email: v.email,
       phone: v.phone,
-      category: v.category, 
+      category: v.category,
       joinedDate: v.createdAt,
       status: v.status,
-      rating: 0,         
-      location: v.location,  
+      rating: 0,
+      location: v.location,
     }));
 
     res.json({
@@ -66,6 +66,10 @@ export const getAllVendors = async (req, res) => {
 };
 
 
+
+/* =========================
+   GET BY VENDORS (ADMIN)
+========================= */
 export const getVendorById = async (req, res) => {
   try {
     const vendor = await Vendor.findByPk(req.params.id, {

@@ -109,6 +109,8 @@ export const loginVendor = async (req, res) => {
   }
 };
 
+
+
 export const getVendorDashboard = async (req, res) => {
   try {
     const vendorId = req.vendorId;
@@ -285,7 +287,7 @@ export const importVendors = async (req, res) => {
         message: "No file uploaded. Please select an Excel file.",
       });
     }
-    
+
 
     const filePath = req.file.path;
 
@@ -310,11 +312,11 @@ export const importVendors = async (req, res) => {
         skipped++;
         continue;
       }
- const hashedPassword = await bcrypt.hash("Vendor@123", 10);
+      const hashedPassword = await bcrypt.hash("Vendor@123", 10);
       // ✅ DUPLICATE SAFE INSERT
       const [vendor, created] = await Vendor.findOrCreate({
         where: { email: row.email },
-         defaults: {
+        defaults: {
           fullName: row.name,           // ✅ REQUIRED
           name: row.name,
           email: row.email,
