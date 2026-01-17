@@ -29,6 +29,10 @@ const VendorProfile = sequelize.define(
             allowNull: false,
             unique: true,
         },
+        category:{
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         bussinessDescription: {
             type: DataTypes.TEXT,
             allowNull: true,

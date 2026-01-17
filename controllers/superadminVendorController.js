@@ -1,5 +1,5 @@
-import Vendor from "../models/vendor.js";
-import VendorProfile from "../models/vendorProfile.js";
+import { Vendor, VendorProfile } from "../models/index.js";
+
 import { Op } from "sequelize";
 
 /* =========================
@@ -42,11 +42,11 @@ export const getAllVendors = async (req, res) => {
       name: v.fullName,
       email: v.email,
       phone: v.phone,
-      service: "General", // later VendorProfile se dynamic
+      category: v.category, 
       joinedDate: v.createdAt,
       status: v.status,
-      rating: 0,         // future: reviews table
-      completedJobs: 0,  // future: events table
+      rating: 0,         
+      location: v.location,  
     }));
 
     res.json({
@@ -62,5 +62,50 @@ export const getAllVendors = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+export const getVendorById = async (req, res) => {
+  try {
+    const vendor = await Vendor.findByPk(req.params.id, {
+      include: [
+        {
+          model: VendorProfile,
+          as: "profile",
+        },
+      ],
+    });
+
+    if (!vendor) {
+      return res.status(404).json({
+        success: false,
+        message: "Vendor not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      vendor: {
+        id: vendor.id,
+        name: vendor.fullName,
+        email: vendor.email,
+        phone: vendor.phone,
+        status: vendor.status,
+        joinedDate: vendor.createdAt,
+
+        businessName: vendor.profile?.bussinessName,
+        category: vendor.profile?.category,
+        location: vendor.profile?.serviceLocation,
+        description: vendor.profile?.bussinessDescription,
+        experienceYears: vendor.profile?.experinceYears,
+      },
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

@@ -48,6 +48,7 @@ app.use("/api/vendor/profile", vendorProfileRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/superadmin", superAdminRoutes);
 app.use("/api/admin", adminRoutes);
+
 // Sync database and start server
 sequelize
   .sync()

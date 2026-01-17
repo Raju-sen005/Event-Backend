@@ -6,6 +6,7 @@ import Requirement from "../models/requirement.js";
 import Notification from "../models/notification.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import XLSX from "xlsx";
 import { Op } from "sequelize";
 /* =======================
    🔹 Vendor Signup
@@ -270,6 +271,76 @@ export const getAllVendors = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+
+export const importVendors = async (req, res) => {
+  try {
+    // ✅ SAFETY CHECK
+    if (!req.file) {
+      return res.status(400).json({
+        message: "No file uploaded. Please select an Excel file.",
+      });
+    }
+    
+
+    const filePath = req.file.path;
+
+    const workbook = XLSX.readFile(filePath);
+    const sheetName = workbook.SheetNames[0];
+    const sheetData = XLSX.utils.sheet_to_json(
+      workbook.Sheets[sheetName]
+    );
+
+    if (!sheetData.length) {
+      return res.status(400).json({
+        message: "Excel file is empty",
+      });
+    }
+
+    let inserted = 0;
+    let skipped = 0;
+
+    for (const row of sheetData) {
+      // ✅ REQUIRED FIELDS CHECK
+      if (!row.email || !row.name) {
+        skipped++;
+        continue;
+      }
+ const hashedPassword = await bcrypt.hash("Vendor@123", 10);
+      // ✅ DUPLICATE SAFE INSERT
+      const [vendor, created] = await Vendor.findOrCreate({
+        where: { email: row.email },
+         defaults: {
+          fullName: row.name,           // ✅ REQUIRED
+          name: row.name,
+          email: row.email,
+          phone: row.phone || "",
+          category: row.category || "",
+          status: row.status || "pending",
+          rating: row.rating || 0,
+          location: row.location || "",
+          password: hashedPassword,     // ✅ REQUIRED
+        },
+      });
+
+      if (created) inserted++;
+      else skipped++;
+    }
+
+    res.json({
+      message: "Vendors imported successfully",
+      inserted,
+      skipped,
+    });
+  } catch (error) {
+    console.error("VENDOR IMPORT ERROR:", error);
+    res.status(500).json({
+      message: "Vendor import failed",
+      error: error.message,
     });
   }
 };
