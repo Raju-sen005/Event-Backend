@@ -16,11 +16,11 @@ export const getAdminDashboardStats = async (req, res) => {
     // Total vendors
     const totalVendors = await Vendor.count();
 
-    // Active events (Planning + Active + In Progress)
+    // Active events 
     const activeEvents = await Event.count({
       where: {
         status: {
-          [Op.in]: ["Planning", "Active", "In Progress"],
+          [Op.in]: ["Active"],
         },
       },
     });

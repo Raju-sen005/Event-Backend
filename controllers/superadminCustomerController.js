@@ -63,3 +63,49 @@ export const getAllCustomers = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+
+/* =========================
+   GET CUSTOMER BY ID (ADMIN)
+========================= */
+export const getCustomerById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByPk(id, {
+      attributes: ["id", "fullName", "email", "createdAt", "status"],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Customer not found",
+      });
+    }
+
+    // Events created by this customer
+    const eventsCreated = await Event.count({
+      where: { customerName: user.fullName },
+    });
+
+    res.json({
+      success: true,
+      customer: {
+        id: user.id,
+        name: user.fullName,
+        email: user.email,
+        phone: "-", // future scope
+        joinedDate: user.createdAt,
+        status: user.status,
+        eventsCreated,
+        lastActive: "Recently", // future activity log
+      },
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

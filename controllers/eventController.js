@@ -181,7 +181,7 @@ export const getActiveEvents = async (req, res) => {
   try {
     const events = await Event.findAll({
       where: {
-        status: ["Active", "In Progress", "Planning"],
+        status: ["Active"],
       },
       order: [["date", "ASC"]],
     });

@@ -27,6 +27,14 @@ export const getAllVendors = async (req, res) => {
     const vendors = await Vendor.findAll({
       where,
       attributes: ["id", "fullName", "email", "phone", "status", "createdAt"],
+      include: [
+        {
+          model: VendorProfile,
+          as: "profile",
+          attributes: ["category", "serviceLocation"],
+          required: false,
+        },
+      ],
       order: [["createdAt", "DESC"]],
     });
 
@@ -42,11 +50,11 @@ export const getAllVendors = async (req, res) => {
       name: v.fullName,
       email: v.email,
       phone: v.phone,
-      category: v.category,
+      category: v.profile?.category || "-",
       joinedDate: v.createdAt,
       status: v.status,
       rating: 0,
-      location: v.location,
+      location: v.profile?.serviceLocation || "-",
     }));
 
     res.json({
